@@ -157,7 +157,7 @@ export const update = async () => {
       image: "ipfs://QmYourIPFSHashhuaweiwatchgt4frontpng",
       mediaType: "image/png",
       roadmap: "[Viet Nam, China, American, Russia]",
-      location: "Russia", 
+      location: "American", 
     };
 
     console.log(chalk.green("✓ Metadata ready"));

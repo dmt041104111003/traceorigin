@@ -33,6 +33,22 @@ export default function ProductTraceabilityPage() {
 
   const [selectedStep, setSelectedStep] = React.useState(0);
 
+  const decodedAssetName = React.useMemo(() => {
+    if (!unit || unit.length <= 56) return "";
+    const rest = unit.slice(56);
+    const CIP68_REF_PREFIX = "000643b0";
+    const hexName = rest.startsWith(CIP68_REF_PREFIX) ? rest.slice(CIP68_REF_PREFIX.length) : rest;
+    if (!hexName || hexName.length % 2 !== 0) return "";
+    try {
+      const bytes = new Uint8Array(
+        hexName.match(/.{1,2}/g)?.map((b) => parseInt(b, 16)) || []
+      );
+      return new TextDecoder().decode(bytes);
+    } catch {
+      return "";
+    }
+  }, [unit]);
+
   const normalize = (s: string) => s?.toLowerCase().trim() || "";
 
   const waypoints = React.useMemo(() => {
@@ -52,6 +68,20 @@ export default function ProductTraceabilityPage() {
     [tracking]
   );
 
+  const [historyPage, setHistoryPage] = React.useState(0);
+  const HISTORY_PAGE_SIZE = 3;
+
+  const totalHistoryPages = React.useMemo(() => {
+    const total = tracking?.transaction_history?.length || 0;
+    return total > 0 ? Math.ceil(total / HISTORY_PAGE_SIZE) : 1;
+  }, [tracking]);
+
+  const paginatedHistory = React.useMemo(() => {
+    const list = tracking?.transaction_history || [];
+    const start = historyPage * HISTORY_PAGE_SIZE;
+    return list.slice(start, start + HISTORY_PAGE_SIZE);
+  }, [tracking, historyPage]);
+
   const currentLocation = tracking?.metadata?.location || waypoints[0];
   const currentIndex = waypoints.findIndex((loc: any) => normalize(loc) === normalize(currentLocation));
 
@@ -70,8 +100,6 @@ export default function ProductTraceabilityPage() {
     if (lower.includes("hai phong")) return <Ship className="w-6 h-6" />;
     return <Package className="w-6 h-6" />;
   };
-
-  const productMeta = tracking?.metadata;
 
   if (isLoading) {
     return (
@@ -105,6 +133,18 @@ export default function ProductTraceabilityPage() {
     );
   }
 
+  const productMeta = tracking?.metadata;
+
+  const assetName =
+    decodedAssetName ||
+    (productMeta as any)?.assetName ||
+    (productMeta as any)?.name;
+
+  const rawImage = (productMeta as any)?.image as string | undefined;
+  const imageUrl = rawImage?.startsWith("ipfs://")
+    ? rawImage.replace("ipfs://", "https://ipfs.io/ipfs/")
+    : rawImage;
+
   return (
     <main className="min-h-screen bg-[#f2f2f2] text-gray-900">
       <Head>
@@ -112,16 +152,23 @@ export default function ProductTraceabilityPage() {
       </Head>
 
       <div className="max-w-5xl mx-auto px-3 sm:px-4 lg:px-5 py-2.5 md:py-3 space-y-1.5 md:space-y-2">
+        <Link
+          href="/scan"
+          className="inline-block text-xs md:text-sm font-medium text-[#c41e3a] hover:text-red-700 hover:underline mb-2"
+        >
+          ← Back to scan
+        </Link>
+
         {/* Header */}
         <header className="text-center space-y-0.5">
           <p className="text-xs font-medium text-gray-500 uppercase tracking-[0.18em]">
             Verified on Cardano
           </p>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Transparent product journey
+            {assetName || "Transparent product journey"}
           </h1>
           <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
-            {productMeta?.model || "Product"} — tracked end‑to‑end from origin to final destination.
+            {productMeta?.model || assetName || "Product"} — tracked end‑to‑end from origin to final destination.
           </p>
         </header>
 
@@ -181,7 +228,34 @@ export default function ProductTraceabilityPage() {
           </div>
         </section>
 
-        <div className="grid lg:grid-cols-2 gap-1.5 md:gap-2">
+        <div className="grid lg:grid-cols-3 gap-1.5 md:gap-2">
+          {/* Product Visual */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 flex flex-col items-center justify-center">
+            {imageUrl ? (
+              <div className="w-full flex flex-col items-center gap-2">
+                <div className="w-full aspect-square max-w-[260px] mx-auto overflow-hidden flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imageUrl}
+                    alt={assetName || productMeta?.model || "Product image"}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/logo.png";
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 text-center break-words px-1">
+                  {assetName || productMeta?.model || "Product"}
+                </p>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm text-center italic px-2">
+                No product image available.
+              </p>
+            )}
+          </div>
+
           {/* Current Milestone */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 space-y-1.5">
             <h3 className="text-base md:text-lg font-semibold flex items-center gap-2 text-gray-800">
@@ -231,7 +305,7 @@ export default function ProductTraceabilityPage() {
             <h3 className="text-base md:text-lg font-semibold mb-1 text-gray-800">Transfer history</h3>
 
             <div className="space-y-0.5 max-h-[280px] overflow-y-auto pr-1 scrollbar-visible">
-              {tracking.transaction_history.map((tx: any) => (
+              {paginatedHistory.map((tx: any) => (
                 <div
                   key={tx.txHash}
                   onClick={() => {
@@ -254,6 +328,30 @@ export default function ProductTraceabilityPage() {
                 </div>
               ))}
             </div>
+
+            {totalHistoryPages > 1 && (
+              <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setHistoryPage((p) => Math.max(0, p - 1))}
+                  disabled={historyPage === 0}
+                  className="text-xs px-2 py-1 rounded border border-gray-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Prev
+                </button>
+                <span className="text-xs text-gray-500">
+                  Page {historyPage + 1} / {totalHistoryPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setHistoryPage((p) => Math.min(totalHistoryPages - 1, p + 1))}
+                  disabled={historyPage >= totalHistoryPages - 1}
+                  className="text-xs px-2 py-1 rounded border border-gray-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

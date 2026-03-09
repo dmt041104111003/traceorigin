@@ -2,8 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import QueryClientProvider from "@/providers/query";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { AppShell } from "@/components/AppShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
   description:
     "A Cardano-based traceability solution for products using NFTs and QR codes.",
   icons: {
-    icon: "/logo.png",
+    icon: "/logo.svg",
   },
 };
 
@@ -38,11 +37,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryClientProvider>
-          <Header />
-          <div className="pt-[72px] md:pt-[88px] min-h-screen flex flex-col">
-            <div className="flex-1">{children}</div>
-            <Footer />
-          </div>
+          <AppShell>{children}</AppShell>
         </QueryClientProvider>
       </body>
     </html>

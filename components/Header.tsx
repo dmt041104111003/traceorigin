@@ -9,6 +9,7 @@ const MENU = [
   { id: "home", label: "Home", href: "/" },
   { id: "create", label: "Create", href: "/create" },
   { id: "scan", label: "Scan", href: "/scan" },
+  { id: "dashboard", label: "Dashboard", href: "/dashboard" },
 ];
 
 export function Header() {
@@ -16,7 +17,15 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const activeId =
-    pathname === "/" ? "home" : pathname.startsWith("/create") ? "create" : pathname.startsWith("/scan") ? "scan" : null;
+    pathname === "/"
+      ? "home"
+      : pathname.startsWith("/create")
+      ? "create"
+      : pathname.startsWith("/scan")
+      ? "scan"
+      : pathname.startsWith("/dashboard")
+      ? "dashboard"
+      : null;
 
   React.useEffect(() => {
     if (!mobileMenuOpen) return;
