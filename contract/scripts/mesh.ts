@@ -14,8 +14,14 @@ import {
 } from "@meshsdk/core";
 import blueprint from "../plutus.json";
 
+type WalletLike = {
+  getUtxos: () => Promise<UTxO[]>;
+  getCollateral: () => Promise<UTxO[]>;
+  getChangeAddress: () => Promise<string>;
+};
+
 export class MeshAdapter {
-  protected wallet: MeshWallet;
+  protected wallet: WalletLike;
   protected fetcher: IFetcher;
 
   protected mintCompileCode: string;
@@ -35,7 +41,7 @@ export class MeshAdapter {
     owners,
     provider,
   }: {
-    wallet: MeshWallet;
+    wallet: WalletLike;
     owners: Array<string>;
     provider: BlockfrostProvider;
   }) {

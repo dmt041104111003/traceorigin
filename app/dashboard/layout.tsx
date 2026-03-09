@@ -96,6 +96,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <nav className="px-4 py-4 space-y-1">
             <NavItem href="/dashboard" icon={<LayoutDashboard className="w-5 h-5" />} label="Dashboard" />
             <NavItem href="/dashboard/profile" icon={<Shield className="w-5 h-5" />} label="Profile" />
+            <div className="mt-2">
+              <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500 mb-1">
+                Asset tools
+              </p>
+              <div className="space-y-1">
+                <NavItem href="/dashboard/mint" icon={<QrCode className="w-5 h-5" />} label="Asset" />
+              </div>
+            </div>
           </nav>
 
           <div className="mt-auto px-4 py-4 border-t border-gray-200 space-y-1">
@@ -167,6 +175,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <nav className="px-3 py-4 space-y-1 flex-1 overflow-y-auto">
               <NavItem href="/dashboard" icon={<LayoutDashboard className="w-5 h-5" />} label="Dashboard" />
               <NavItem href="/dashboard/profile" icon={<Shield className="w-5 h-5" />} label="Profile" />
+              <div className="mt-2">
+                <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500 mb-1">
+                  Asset tools
+                </p>
+                <div className="space-y-1">
+                  <NavItem href="/dashboard/mint" icon={<QrCode className="w-5 h-5" />} label="Mint" />
+                  <NavItem href="/dashboard/update" icon={<QrCode className="w-5 h-5" />} label="Update" />
+                  <NavItem href="/dashboard/burn" icon={<QrCode className="w-5 h-5" />} label="Burn" />
+                </div>
+              </div>
             </nav>
 
             <div className="px-3 py-4 border-t border-gray-200 space-y-1">

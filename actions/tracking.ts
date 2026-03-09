@@ -15,6 +15,7 @@ interface HistoryEntry {
 export const getTracking = async ({ unit }: { unit: string }) => {
   const blockfrostApi = new BlockFrostAPI({
     projectId: process.env.BLOCKFROST_API_KEY || "",
+    network: "preprod",
   });
 
   const assetTxRefs = await blockfrostApi.assetsTransactions(unit);

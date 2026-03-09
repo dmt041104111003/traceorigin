@@ -94,111 +94,111 @@ export default function DashboardProfilePage() {
   if (loading) return null;
 
   return (
-    <main className="px-4 md:px-8 py-6">
-      <div className="max-w-3xl w-full space-y-4">
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 space-y-3">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-lg md:text-xl font-semibold text-gray-900">
-                Profile
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                View your wallet profile and update basic information.
-              </p>
-            </div>
-          </div>
-
-          {profile && (
-            <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
-              <div className="space-y-1">
-                <dt className="font-semibold text-gray-700">Wallet address</dt>
-                <dd className="font-mono text-gray-600 break-all bg-gray-50 border border-gray-200 rounded px-3 py-2">
-                  {profile.walletAddress}
-                </dd>
-              </div>
-              <div className="space-y-1">
-                <dt className="font-semibold text-gray-700">Role</dt>
-                <dd className="text-gray-800">{profile.roleCode}</dd>
-              </div>
-              <div className="space-y-1">
-                <dt className="font-semibold text-gray-700">Status</dt>
-                <dd className="text-gray-800">
-                  {profile.isActive ? "Active" : "Inactive"}
-                </dd>
-              </div>
-              <div className="space-y-1">
-                <dt className="font-semibold text-gray-700">Created at</dt>
-                <dd className="text-gray-600">
-                  {profile.createdAt
-                    ? new Date(profile.createdAt).toLocaleString()
-                    : "-"}
-                </dd>
-              </div>
-              <div className="space-y-1">
-                <dt className="font-semibold text-gray-700">Last updated</dt>
-                <dd className="text-gray-600">
-                  {profile.updatedAt
-                    ? new Date(profile.updatedAt).toLocaleString()
-                    : "-"}
-                </dd>
-              </div>
-            </dl>
-          )}
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 space-y-4">
+    <div className="max-w-3xl w-full space-y-4">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 space-y-3">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-base md:text-lg font-semibold text-gray-900">
-              Edit profile
-            </h2>
+            <h1 className="text-lg md:text-xl font-semibold text-gray-900">
+              Profile
+            </h1>
             <p className="text-sm text-gray-600 mt-1">
-              Update your display name and location.
+              View your wallet profile and update basic information.
             </p>
           </div>
-
-          {error && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
-              {error}
-            </p>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Display name
-              </label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/30 focus:border-[#c41e3a]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/30 focus:border-[#c41e3a]"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving || !displayName.trim() || !location.trim()}
-              className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-md bg-[#c41e3a] text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-            >
-              {saving ? "Saving..." : "Save changes"}
-            </button>
-          </form>
         </div>
+
+        {profile && (
+          <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
+            <div className="space-y-1">
+              <dt className="font-semibold text-gray-700">Wallet address</dt>
+              <dd className="font-mono text-gray-600 break-all bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                {profile.walletAddress}
+              </dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="font-semibold text-gray-700">Role</dt>
+              <dd className="text-gray-800">{profile.roleCode}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="font-semibold text-gray-700">Status</dt>
+              <dd className="text-gray-800">
+                {profile.isActive ? "Active" : "Inactive"}
+              </dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="font-semibold text-gray-700">Created at</dt>
+              <dd className="text-gray-600">
+                {profile.createdAt
+                  ? new Date(profile.createdAt).toLocaleString()
+                  : "-"}
+              </dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="font-semibold text-gray-700">Last updated</dt>
+              <dd className="text-gray-600">
+                {profile.updatedAt
+                  ? new Date(profile.updatedAt).toLocaleString()
+                  : "-"}
+              </dd>
+            </div>
+          </dl>
+        )}
       </div>
-    </main>
+
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 space-y-4">
+        <div>
+          <h2 className="text-base md:text-lg font-semibold text-gray-900">
+            Edit profile
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Update your display name and location.
+          </p>
+        </div>
+
+        {error && (
+          <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Display name
+            </label>
+          <input
+            disabled={saving}
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/30 focus:border-[#c41e3a]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Location
+            </label>
+          <input
+            disabled={saving}
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/30 focus:border-[#c41e3a]"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={saving || !displayName.trim() || !location.trim()}
+            className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-md bg-[#c41e3a] text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          >
+            {saving ? "Saving..." : "Save changes"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
