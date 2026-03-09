@@ -23,7 +23,27 @@ import { getTracking } from "@/actions/tracking";
 
 export default function ProductTraceabilityPage() {
   const params = useParams();
-  const unit = params.id as string;
+  const rawId = params.id as string;
+  const decodedId = decodeURIComponent(rawId);
+
+  const unit = React.useMemo(() => {
+    if (!decodedId || decodedId.length <= 56) return decodedId;
+
+    const policyId = decodedId.slice(0, 56);
+    const rest = decodedId.slice(56);
+
+    const isHex = /^[0-9a-fA-F]+$/.test(rest) && rest.length % 2 === 0;
+    if (isHex) {
+      return decodedId;
+    }
+
+    const hexName = Array.from(new TextEncoder().encode(rest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    const CIP68_REF_PREFIX = "000643b0";
+    return policyId + CIP68_REF_PREFIX + hexName;
+  }, [decodedId]);
 
   const { data: tracking, isLoading, isError, error } = useQuery({
     queryKey: ["product-tracking", unit],
@@ -34,20 +54,32 @@ export default function ProductTraceabilityPage() {
   const [selectedStep, setSelectedStep] = React.useState(0);
 
   const decodedAssetName = React.useMemo(() => {
-    if (!unit || unit.length <= 56) return "";
-    const rest = unit.slice(56);
+    if (!decodedId || decodedId.length <= 56) return "";
+
+    const rest = decodedId.slice(56);
     const CIP68_REF_PREFIX = "000643b0";
-    const hexName = rest.startsWith(CIP68_REF_PREFIX) ? rest.slice(CIP68_REF_PREFIX.length) : rest;
-    if (!hexName || hexName.length % 2 !== 0) return "";
-    try {
-      const bytes = new Uint8Array(
-        hexName.match(/.{1,2}/g)?.map((b) => parseInt(b, 16)) || []
-      );
-      return new TextDecoder().decode(bytes);
-    } catch {
-      return "";
+
+    // Nếu rest là hex, cố decode theo logic CIP-68
+    const isHex = /^[0-9a-fA-F]+$/.test(rest) && rest.length % 2 === 0;
+    if (isHex) {
+      let hexName = rest;
+      if (hexName.startsWith(CIP68_REF_PREFIX)) {
+        hexName = hexName.slice(CIP68_REF_PREFIX.length);
+      }
+      if (!hexName || hexName.length % 2 !== 0) return "";
+      try {
+        const bytes = new Uint8Array(
+          hexName.match(/.{1,2}/g)?.map((b) => parseInt(b, 16)) || [],
+        );
+        return new TextDecoder().decode(bytes);
+      } catch {
+        return "";
+      }
     }
-  }, [unit]);
+
+    // Nếu không phải hex: coi suffix chính là assetName gốc
+    return rest;
+  }, [decodedId]);
 
   const normalize = (s: string) => s?.toLowerCase().trim() || "";
 
@@ -123,10 +155,10 @@ export default function ProductTraceabilityPage() {
             again later.
           </p>
           <Link
-            href="/"
+            href="/scan"
             className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md text-sm font-medium bg-[#c41e3a] text-white hover:bg-red-700 transition-colors"
           >
-            Return home
+            Return to scan
           </Link>
         </div>
       </div>

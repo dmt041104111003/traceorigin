@@ -2,6 +2,7 @@
 
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { useState } from 'react';
+import Link from 'next/link';
 import { CheckCircle, RotateCw, AlertCircle } from 'lucide-react';
 
 export default function ScanQR() {
@@ -33,7 +34,14 @@ export default function ScanQR() {
   return (
     <main className="min-h-screen bg-[#f2f2f2] px-3 sm:px-4 py-6 md:py-8">
       <div className="max-w-lg mx-auto w-full space-y-3 md:space-y-4">
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2">
+        <Link
+          href="/"
+          className="inline-block text-xs md:text-sm font-medium text-[#c41e3a] hover:text-red-700 hover:underline mb-1"
+        >
+          ← Back to home
+        </Link>
+
+        <div className="p-0">
           <div className="relative aspect-square">
             <Scanner
               onScan={handleScan}
@@ -81,7 +89,7 @@ export default function ScanQR() {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-3">
+        <div className="p-0">
           {!result ? (
             <p className="text-gray-600 text-sm text-center">
               Tip: good lighting and steady hands improve speed.

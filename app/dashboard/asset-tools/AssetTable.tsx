@@ -63,7 +63,9 @@ export function AssetTable(props: {
     if (typeof window === "undefined") return;
     try {
       setDownloadingId(asset.id);
-      const productUrl = `${window.location.origin}/product/${asset.policyId + asset.assetName}`;
+      const id = asset.policyId + asset.assetName;
+      const productUrl = `${window.location.origin}/product/${id}`;
+
       const dataUrl = await QRCode.toDataURL(productUrl, {
         errorCorrectionLevel: "H",
         width: 512,
