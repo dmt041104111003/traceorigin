@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "get-product": "tsx ./cli/get-product.ts",
     "dev": "next dev --turbopack",
     "dev:turbo": "next dev --turbopack",
     "build": "next build",
@@ -12,7 +13,8 @@
     "update": "tsx ./cli/update.ts",
     "contract:fmt": "cd ./contract && aiken fmt",
     "contract:test": "cd ./contract && aiken check",
-    "contract:build": "cd ./contract && aiken build"
+    "contract:build": "cd ./contract && aiken build",
+    "postinstall": "node -e \"const fs=require('fs');const path=require('path');const src=path.resolve('node_modules/libsodium-sumo/dist/modules-sumo-esm/libsodium-sumo.mjs');const dest=path.resolve('node_modules/libsodium-wrappers-sumo/dist/modules-sumo-esm/libsodium-sumo.mjs');if(fs.existsSync(src)&&!fs.existsSync(dest)){fs.mkdirSync(path.dirname(dest),{recursive:true});fs.copyFileSync(src,dest);}\""
   },
   "dependencies": {
     "@blockfrost/blockfrost-js": "^6.1.0",
@@ -27,6 +29,8 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
+    "libsodium-sumo": "^0.7.13",
+    "libsodium-wrappers-sumo": "^0.7.13",
     "qrcode": "^1.5.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",

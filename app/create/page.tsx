@@ -2,16 +2,13 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import QRCode from "qrcode";
-import { QrCode, Download, ExternalLink, Sparkles } from "lucide-react";
+import { QrCode, Download, ExternalLink, Sparkles, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getProduct } from "@/actions/product";
 import Link from "next/link";
 
-const CIP68_LABEL = "000643b0";
-const MAX_ASSET_NAME_BYTES = 32;
 
 interface FormState {
-  issuers: string;
   productName: string;
 }
 
@@ -24,9 +21,10 @@ interface QRResult {
 
 export default function Create() {
   const [form, setForm] = useState<FormState>({
-    issuers: "",
     productName: "",
   });
+  const [issuers, setIssuers] = useState<string[]>([]);
+  const [issuerInput, setIssuerInput] = useState("");
   const [qrResult, setQRResult] = useState<QRResult>({
     qrCodeUrl: null,
     productUrl: null,
@@ -50,19 +48,60 @@ export default function Create() {
     [],
   );
 
-  const trimmedIssuers = useMemo(() => {
-    return form.issuers
-      .replace(/\n+/g, ",")
-      .replace(/\s*,\s*/g, ",")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }, [form.issuers]);
+  const trimmedIssuers = useMemo(
+    () => issuers.map((s) => s.trim()).filter(Boolean),
+    [issuers],
+  );
 
   const trimmedProductName = useMemo(
     () => form.productName.trim(),
     [form.productName],
   );
+
+  const handleAddIssuer = useCallback(() => {
+    const value = issuerInput.trim();
+    if (!value) return;
+    setIssuers((prev) => (prev.includes(value) ? prev : [...prev, value]));
+    setIssuerInput("");
+    setQRResult({
+      qrCodeUrl: null,
+      productUrl: null,
+      productId: null,
+      error: null,
+    });
+    setSubmitted(false);
+  }, [issuerInput]);
+
+  const handleRemoveIssuer = useCallback((addr: string) => {
+    setIssuers((prev) => prev.filter((v) => v !== addr));
+  }, []);
+
+  const handleMoveIssuer = useCallback((index: number, offset: number) => {
+    setIssuers((prev) => {
+      const next = [...prev];
+      const targetIndex = index + offset;
+      if (targetIndex < 0 || targetIndex >= next.length) return prev;
+      const [item] = next.splice(index, 1);
+      next.splice(targetIndex, 0, item);
+      return next;
+    });
+  }, []);
+
+  const handleClearIssuers = useCallback(() => {
+    setIssuers([]);
+    setQRResult({
+      qrCodeUrl: null,
+      productUrl: null,
+      productId: null,
+      error: null,
+    });
+    setSubmitted(false);
+  }, []);
+
+  const formatIssuer = useCallback((addr: string) => {
+    if (addr.length <= 24) return addr;
+    return `${addr.slice(0, 12)}...${addr.slice(-6)}`;
+  }, []);
 
   const generateQRCode = useCallback(
     async (url: string): Promise<string | null> => {
@@ -136,58 +175,98 @@ export default function Create() {
     submitted && (isLoading || isFetching || !qrResult.qrCodeUrl);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50 py-12 px-6 relative overflow-hidden">
-      {/* Background decoration remains unchanged */}
-
-      <div className="max-w-6xl mx-auto relative z-10">
+    <main className="min-h-screen bg-[#f2f2f2] py-8 px-4 md:px-6 flex items-center">
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16 animate-in fade-in slide-in-from-top duration-700">
-          <div className="inline-flex items-center gap-3 mb-6 px-6 py-3 bg-gradient-to-r from-blue-100 to-emerald-100 rounded-full shadow-sm">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-emerald-600 rounded-full flex items-center justify-center shadow-md">
-              <QrCode className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-blue-800 font-semibold tracking-wide">
-              Transparent Product Traceability
-            </span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Verify Product Origin
-            <br className="hidden sm:block" />
+        <div className="text-center mb-6 md:mb-8 space-y-2">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-[0.18em]">
+            Create
+          </p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+            Generate traceability QR
           </h1>
-
-          <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            Create CIP-68 compliant QR codes to enable instant product origin
-            verification and build lasting consumer trust.
+          <p className="text-sm md:text-base text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Create a QR code that links directly to the product traceability page.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-4 md:gap-6 items-stretch">
           {/* Form */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 lg:p-10 border border-white/50">
-            <form onSubmit={handleSubmit} className="space-y-7">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 md:p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
                   Issuer(s) <span className="text-red-500">*</span>
                 </label>
-                <textarea
-                  name="issuers"
-                  required
-                  value={form.issuers}
-                  onChange={handleChange}
-                  rows={4}
-                  className={`w-full px-5 py-4 bg-white border ${
-                    qrResult.error ? "border-red-500" : "border-slate-200"
-                  } rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all `}
-                  placeholder="Example: addr_test1q..., addr1q..."
-                />
-                <p className="mt-1.5 text-xs text-slate-500">
-                  One address per line or separated by commas
+                <div className="flex gap-2">
+                  <input
+                    name="issuerInput"
+                    type="text"
+                    value={issuerInput}
+                    onChange={(e) => setIssuerInput(e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-4 focus:ring-[#c41e3a]/10 focus:border-[#c41e3a] transition-colors"
+                    placeholder="Example: addr_test1q..., addr1q..."
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddIssuer}
+                    className="px-4 py-3 bg-[#c41e3a] text-white text-sm font-semibold rounded-md hover:bg-red-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  Add each issuer address separately.
                 </p>
+                {trimmedIssuers.length > 0 && (
+                  <div className="mt-3 space-y-2 items-start">
+                    {trimmedIssuers.map((addr, index) => (
+                      <div
+                        key={addr}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-700 w-full justify-between"
+                      >
+                        <span className="truncate mr-2">{formatIssuer(addr)}</span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveIssuer(index, -1)}
+                            className="text-gray-500 hover:text-gray-800"
+                            title="Move up"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveIssuer(index, 1)}
+                            className="text-gray-500 hover:text-gray-800"
+                            title="Move down"
+                          >
+                            ↓
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveIssuer(addr)}
+                            className="text-gray-500 hover:text-gray-800"
+                            title="Remove"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={handleClearIssuers}
+                      className="text-xs text-[#c41e3a] hover:text-red-700"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
                   Product Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -196,13 +275,13 @@ export default function Create() {
                   required
                   value={form.productName}
                   onChange={handleChange}
-                  className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-md focus:ring-4 focus:ring-[#c41e3a]/10 focus:border-[#c41e3a] transition-all"
                   placeholder="Example: Huawei Watch GT 4 Pro"
                 />
               </div>
 
               {qrResult.error && (
-                <p className="text-red-600 text-center font-medium bg-red-50 py-3 rounded-xl">
+                <p className="text-red-700 text-center font-medium bg-red-50 py-3 rounded-md">
                   {qrResult.error}
                 </p>
               )}
@@ -210,7 +289,7 @@ export default function Create() {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full py-5 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-bold text-lg rounded-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                className="w-full py-3.5 bg-[#c41e3a] text-white font-semibold text-base rounded-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 hover:bg-red-700 transition-colors"
               >
                 {isProcessing ? (
                   <>Processing...</>
@@ -225,20 +304,20 @@ export default function Create() {
           </div>
 
           {/* QR Preview */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 lg:p-10 border border-white/50 flex flex-col items-center justify-center">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 md:p-6 flex flex-col items-center justify-center">
             {qrResult.qrCodeUrl ? (
               <div className="text-center space-y-6">
                 <div>
-                  <p className="text-lg font-medium text-slate-600 mb-2">
+                  <p className="text-base font-medium text-gray-700 mb-2">
                     {form.productName}
                   </p>
                 </div>
 
-                <div className="p-6 bg-white rounded-2xl shadow-inner">
+                <div className="p-3 bg-white border border-gray-200 rounded-lg">
                   <img
                     src={qrResult.qrCodeUrl}
                     alt="Product QR Code"
-                    className="w-80 h-80 mx-auto"
+                    className="w-64 h-64 md:w-72 md:h-72 mx-auto"
                   />
                 </div>
 
@@ -246,9 +325,9 @@ export default function Create() {
                   <Link
                     href={qrResult.qrCodeUrl}
                     download={`QR_${qrResult.productId?.replace(/[^a-zA-Z0-9]/g, "_") || "product"}.png`}
-                    className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                    className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#c41e3a] text-white font-semibold rounded-md hover:bg-red-700 transition-colors"
                   >
-                    <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                    <Download className="w-5 h-5" />
                     Download QR
                   </Link>
 
@@ -257,7 +336,7 @@ export default function Create() {
                       href={qrResult.productUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white font-semibold rounded-xl hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                      className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#c41e3a] text-white font-semibold rounded-md hover:bg-red-700 transition-colors"
                     >
                       <ExternalLink className="w-5 h-5" />
                       View Product Page
@@ -266,19 +345,17 @@ export default function Create() {
                 </div>
               </div>
             ) : (
-              <div className="text-center max-w-md">
-                <div className="w-64 h-64 mx-auto bg-gradient-to-br from-blue-100 to-emerald-100 rounded-3xl flex items-center justify-center mb-8">
-                  <QrCode className="w-32 h-32 text-blue-400" />
-                </div>
-                <p className="text-xl font-medium text-slate-600">
+              <div className="text-center max-w-md mx-auto">
+                <QrCode className="w-20 h-20 mx-auto mb-5 text-[#c41e3a]" />
+                <p className="text-base font-medium text-gray-700">
                   Enter issuer address(es) and product name, then click Generate
                 </p>
-                <p className="text-slate-500 mt-4">
+                <p className="text-gray-500 text-sm mt-3">
                   The QR code will link directly to the product page
                 </p>
 
                 {queryError && (
-                  <p className="mt-6 text-red-600 font-medium">
+                  <p className="mt-5 text-red-700 font-medium text-sm">
                     Failed to fetch product data - please check the issuer addresses and product name, and ensure the product exists on the blockchain.
                   </p>
                 )}

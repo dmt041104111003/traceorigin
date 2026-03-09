@@ -75,10 +75,10 @@ export default function ProductTraceabilityPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto" />
-          <p className="text-gray-600 font-medium">Loading traceability journey...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#f2f2f2]">
+        <div className="text-center space-y-3">
+          <Loader2 className="w-10 h-10 animate-spin text-[#c41e3a] mx-auto" />
+          <p className="text-gray-600 text-sm md:text-base">Loading traceability journey…</p>
         </div>
       </div>
     );
@@ -86,18 +86,19 @@ export default function ProductTraceabilityPage() {
 
   if (isError || !tracking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 px-6">
-        <div className="bg-white/90 backdrop-blur-xl border border-red-100/50 rounded-3xl p-12 shadow-2xl text-center max-w-lg w-full">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">Traceability Data Unavailable</h2>
-          <p className="text-gray-600 mb-8 text-lg leading-relaxed">
-            We couldn't retrieve the traceability information for this product. This may be due to a network issue, an invalid product ID, or the data not being recorded on the blockchain yet. Please try again later or contact support if the issue persists.
+      <div className="min-h-screen flex items-center justify-center bg-[#f2f2f2] px-4">
+        <div className="bg-white border border-red-200 rounded-lg shadow-sm p-8 md:p-10 text-center max-w-md w-full">
+          <AlertCircle className="w-14 h-14 text-red-500 mx-auto mb-5" />
+          <h2 className="text-xl md:text-2xl font-bold mb-3 text-gray-900">Traceability data unavailable</h2>
+          <p className="text-gray-600 mb-6 text-sm md:text-base leading-relaxed">
+            We could not retrieve the traceability information for this product. Please check the QR code or try
+            again later.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-emerald-700 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md text-sm font-medium bg-[#c41e3a] text-white hover:bg-red-700 transition-colors"
           >
-            Return Home
+            Return home
           </Link>
         </div>
       </div>
@@ -105,43 +106,36 @@ export default function ProductTraceabilityPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 text-gray-900">
+    <main className="min-h-screen bg-[#f2f2f2] text-gray-900">
       <Head>
         <title>Traceability | {productMeta?.model || "Product Journey"}</title>
       </Head>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 space-y-20 md:space-y-28">
-
-        {/* Header – More cinematic */}
-        <header className="text-center space-y-8">
-          <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-white/70 backdrop-blur-lg border border-blue-100/50 rounded-full shadow-md text-blue-700 font-medium">
-            <BadgeCheck className="w-5 h-5" />
-            Verified on Cardano Blockchain
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
-            Transparent{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-              Product Journey
-            </span>
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 lg:px-5 py-2.5 md:py-3 space-y-1.5 md:space-y-2">
+        {/* Header */}
+        <header className="text-center space-y-0.5">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-[0.18em]">
+            Verified on Cardano
+          </p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Transparent product journey
           </h1>
-
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {productMeta?.model || "Product"} — Immutable visibility from origin to delivery
+          <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
+            {productMeta?.model || "Product"} — tracked end‑to‑end from origin to final destination.
           </p>
         </header>
 
-        {/* Timeline – Enhanced with progress gradient & glow */}
-        <section className="bg-white/70 backdrop-blur-xl border border-blue-100/50 rounded-3xl shadow-xl p-10 md:p-12 relative overflow-hidden">
-          <h2 className="text-xl md:text-2xl font-bold mb-12 text-gray-800 text-center md:text-left">
-            Supply Chain Milestones
+        {/* Timeline */}
+        <section className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 md:p-2.5">
+          <h2 className="text-sm md:text-base font-semibold mb-1 text-gray-800">
+            Supply chain milestones
           </h2>
 
-          <div className="relative flex items-center justify-between pt-4 pb-16">
-            {/* Progress line with gradient */}
-            <div className="absolute top-7 left-0 right-0 h-2 bg-blue-100/60 rounded-full overflow-hidden">
+          <div className="relative z-0 flex items-center justify-between pt-0.5 pb-1.5">
+            {/* Track line */}
+            <div className="absolute top-9 left-[6%] right-[6%] h-[2px] bg-gray-200 rounded-full overflow-hidden -z-10">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-1000 ease-out shadow-md"
+                className="h-full bg-[#c41e3a] transition-all duration-500 ease-out"
                 style={{
                   width: currentIndex >= 0 ? `${(currentIndex / (waypoints.length - 1)) * 100}%` : "0%",
                 }}
@@ -159,19 +153,26 @@ export default function ProductTraceabilityPage() {
                     onClick={() => isClickable && setSelectedStep(index)}
                     disabled={!isClickable}
                     className={cn(
-                      "w-16 h-16 rounded-2xl flex items-center justify-center border-4 shadow-lg transition-all duration-400",
-                      isPast
-                        ? "bg-emerald-500 text-white border-emerald-300 scale-105 group-hover:scale-110"
-                        : isCurrent
-                        ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white border-blue-300 ring-4 ring-blue-200/50 scale-125 animate-pulse"
-                        : "bg-white text-gray-500 border-gray-200 group-hover:border-blue-300 group-hover:text-blue-600 group-hover:scale-110",
-                      isClickable && "cursor-pointer"
+                      "relative flex items-center justify-center focus:outline-none cursor-pointer hover:scale-[1.03] transition-transform duration-200"
                     )}
                   >
-                    {isPast ? <Check className="w-7 h-7" /> : iconForLocation(loc)}
+                    <span className="flex items-center justify-center rounded-full bg-white shadow-sm w-9 h-9 md:w-10 md:h-10">
+                      <span
+                        className={cn(
+                          "flex items-center justify-center rounded-full w-7 h-7 md:w-8 md:h-8 border-2 text-xs md:text-sm",
+                          isPast
+                            ? "bg-emerald-500 text-white border-emerald-500"
+                            : isCurrent
+                            ? "bg-[#c41e3a] text-white border-[#c41e3a]"
+                            : "bg-emerald-400 text-white border-emerald-400"
+                        )}
+                      >
+                        {isPast ? <Check className="w-4 h-4" /> : iconForLocation(loc)}
+                      </span>
+                    </span>
                   </button>
 
-                  <span className="mt-4 text-sm md:text-base font-semibold text-gray-700 text-center leading-tight max-w-[110px] group-hover:text-blue-700 transition-colors">
+                  <span className="mt-3 text-xs md:text-sm font-medium text-gray-700 text-center leading-tight max-w-[110px]">
                     {loc}
                   </span>
                 </div>
@@ -180,58 +181,56 @@ export default function ProductTraceabilityPage() {
           </div>
         </section>
 
-        {/* Grid – Cards with lift on hover */}
-        <div className="grid lg:grid-cols-2 gap-10">
-
+        <div className="grid lg:grid-cols-2 gap-1.5 md:gap-2">
           {/* Current Milestone */}
-          <div className="bg-white/80 backdrop-blur-xl border border-blue-100/50 rounded-3xl shadow-xl p-10 space-y-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-            <h3 className="text-xl font-bold flex items-center gap-3 text-gray-800">
-              <MapPin className="w-7 h-7 text-blue-600" />
-              Current Milestone
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 space-y-1.5">
+            <h3 className="text-base md:text-lg font-semibold flex items-center gap-2 text-gray-800">
+              <MapPin className="w-5 h-5 text-[#c41e3a]" />
+              Current milestone
             </h3>
 
             {selectedTx ? (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 text-gray-700">
-                  <Calendar className="w-5 h-5 text-blue-600" />
+              <div className="space-y-3 text-sm md:text-base">
+                <div className="flex items-center gap-3 text-gray-700 text-sm">
+                  <Calendar className="w-4 h-4 text-gray-500" />
                   {new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeStyle: "short" }).format(
                     new Date(selectedTx.datetime * 1000)
                   )}
                 </div>
 
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Action</p>
-                  <p className="text-lg font-semibold mt-1">{selectedTx.action}</p>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-[0.16em] font-semibold">Action</p>
+                  <p className="text-sm md:text-base font-semibold mt-1 text-gray-900">{selectedTx.action}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Status</p>
-                  <span className="inline-flex px-4 py-1.5 mt-1.5 text-sm font-medium bg-emerald-100 text-emerald-800 rounded-full">
+                  <p className="text-[11px] text-gray-500 uppercase tracking-[0.16em] font-semibold">Status</p>
+                  <span className="inline-flex px-3 py-1 mt-1.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800">
                     {selectedTx.status}
                   </span>
                 </div>
 
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Transaction</p>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-[0.16em] font-semibold">Transaction</p>
                   <Link
                     href={`https://preprod.cexplorer.io/tx/${selectedTx.txHash}`}
                     target="_blank"
-                    className="text-sm font-mono text-blue-700 hover:text-blue-900 break-all hover:underline mt-1 block"
+                    className="text-xs md:text-sm font-mono text-[#c41e3a] hover:text-red-700 break-all hover:underline mt-1 block"
                   >
                     {selectedTx.txHash}
                   </Link>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-600 italic">No transaction recorded for this stage yet.</p>
+              <p className="text-gray-600 text-sm italic">No transaction recorded for this stage yet.</p>
             )}
           </div>
 
           {/* History */}
-          <div className="bg-white/80 backdrop-blur-xl border border-blue-100/50 rounded-3xl shadow-xl p-10 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-            <h3 className="text-xl font-bold mb-8 text-gray-800">Transfer History</h3>
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2">
+            <h3 className="text-base md:text-lg font-semibold mb-1 text-gray-800">Transfer history</h3>
 
-            <div className="space-y-5 max-h-[480px] overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50/50">
+            <div className="space-y-0.5 max-h-[280px] overflow-y-auto pr-1 scrollbar-visible">
               {tracking.transaction_history.map((tx: any) => (
                 <div
                   key={tx.txHash}
@@ -240,8 +239,9 @@ export default function ProductTraceabilityPage() {
                     if (idx >= 0) setSelectedStep(idx);
                   }}
                   className={cn(
-                    "p-6 border border-gray-200/70 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all duration-300 cursor-pointer",
-                    normalize(tx.metadata?.location) === normalize(waypoints[selectedStep]) && "bg-blue-50/50 border-blue-300"
+                    "p-4 border border-gray-200 rounded-md cursor-pointer bg-white hover:border-[#c41e3a]/70 hover:bg-red-50/40 transition-colors",
+                    normalize(tx.metadata?.location) === normalize(waypoints[selectedStep]) &&
+                      "border-[#c41e3a] bg-red-50/60"
                   )}
                 >
                   <div className="flex justify-between items-baseline mb-2">
@@ -259,27 +259,31 @@ export default function ProductTraceabilityPage() {
 
         {/* Product Details */}
         {productMeta && (
-          <section className="bg-white/80 backdrop-blur-xl border border-blue-100/50 rounded-3xl shadow-xl p-10 md:p-12 space-y-10 hover:shadow-2xl transition-shadow duration-300">
-            <h2 className="text-2xl font-bold text-gray-800">Product Details</h2>
+          <section className="bg-white border border-gray-200 rounded-lg shadow-sm p-3.5 md:p-4 space-y-3.5 md:space-y-4">
+            <h2 className="text-base md:text-lg font-semibold text-gray-800">Product details</h2>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-3">
               {[
                 { label: "Brand", value: productMeta.brand },
                 { label: "Model", value: productMeta.model },
                 { label: "Material", value: productMeta.material },
                 { label: "Battery", value: productMeta.battery },
               ].map((item, i) => (
-                <div key={i} className="space-y-2">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">{item.label}</p>
-                  <p className="text-lg font-semibold text-gray-900">{item.value || "—"}</p>
+                <div key={i} className="space-y-1.5">
+                  <p className="text-[11px] text-gray-500 uppercase tracking-[0.16em] font-semibold">
+                    {item.label}
+                  </p>
+                  <p className="text-sm md:text-base font-semibold text-gray-900">{item.value || "—"}</p>
                 </div>
               ))}
             </div>
 
             {productMeta.description && (
-              <div className="pt-6 border-t border-gray-200/50">
-                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-3">Description</p>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              <div className="pt-5 border-t border-gray-200">
+                <p className="text-[11px] text-gray-500 uppercase tracking-[0.16em] font-semibold mb-2">
+                  Description
+                </p>
+                <p className="text-sm md:text-base text-gray-700 leading-relaxed whitespace-pre-line">
                   {productMeta.description}
                 </p>
               </div>

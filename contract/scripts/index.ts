@@ -1,9 +1,14 @@
+import "dotenv/config";
 import chalk from "chalk";
 import { BlockfrostProvider, MeshWallet } from "@meshsdk/core";
 
 import { Contract } from "./offchain";
 
 const provider = new BlockfrostProvider(process.env.BLOCKFROST_API_KEY || "");
+
+if (!process.env.MNEMONIC) {
+  throw new Error("MNEMONIC is not set in .env");
+}
 
 const wallet = new MeshWallet({
   networkId: 0,
@@ -12,18 +17,18 @@ const wallet = new MeshWallet({
   submitter: provider,
   key: {
     type: "mnemonic",
-    words: process.env.MNEMONIC?.split(" ") || [],
+    words: process.env.MNEMONIC.split(" "),
   },
 });
 
 const owners: Array<string> = [
-  "addr_test1qrrsqzvu048737jnqq7rd3ck07e7cnk75x5wmdlt9zv7ptmqwvk3ckjxl4wcf6ehtynh8lctuu85xxdg9c8v5pfnjn4shn35yc",
-  "addr_test1qryamep6l09mtjswn000l3jd79pls9pt5aj0nsf5cyfdp3xmj9k859jpvfpqepllgqn02473mlhttcf3lyujlpzhrk3qcndhyw",
+  "addr_test1qrplj973a94sz46jqhfdmr87r9jngdw3ec2e3vygedquu0mhmfn5pu6rc4ynwh4p4ssxdjy7tdp6m27ggkq8ym0jlvgqqset5j",
+  "addr_test1qr9ql9xgnntlwrtqklw8uand62usxq6y4gknrta58m8r0dcswr2qa03gpcus5s630ncctdjfjg7x4f802zqfy0xd9mlqndztal",
   "addr_test1qrw7yktcc7wsscq46pfamt8t9yd2mlp7dtgjw3mq2hqplgvax05kaj8z5tgvtqd5q4xug4qqdgnzn2l8krm09c85f4psmzum9f",
   "addr_test1qztthppkvnl2k2gk96r6v22qxvwyymh4dr4njclae8wwau8d3tp4cyr8p83gs3vjnhmldj8vzhkx3cvnr80gjdfvdfdqcr2qz4",
 ];
 
-const ASSET_NAME_UTF8 = "Huawei Watch GT4 Pro";
+const ASSET_NAME_UTF8 = "Huawei Watch GT4 V9";
 const ASSET_NAME_HEX = Buffer.from(ASSET_NAME_UTF8, "utf8").toString("hex");
 
 const printHeader = (title: string) => {
@@ -72,11 +77,11 @@ export const mint = async () => {
 
     console.log(chalk.yellow("Preparing metadata for mint..."));
     const metadata = {
-      name: "Huawei Watch GT 4 Pro - Premium Titanium Smartwatch",
+      name: "Huawei Watch GT4 V9 - Premium Titanium Smartwatch",
       description:
-        "The Huawei Watch GT 4 Pro is a high-end smartwatch featuring an aerospace-grade titanium case, spherical sapphire crystal glass, and a 1.5-inch LTPO AMOLED display (466×466 pixels, ~310 ppi). It offers up to 14 days of battery life (typical usage), HUAWEI TruSense health system (heart rate, SpO2, ECG, stress, sleep, skin temperature), 100+ sports modes, dual-band multi-system GPS, 5 ATM water resistance (50 meters), HarmonyOS, Bluetooth 5.2, NFC, and premium design for active, modern lifestyles.",
+        "The Huawei Watch GT4 V9 is a high-end smartwatch featuring an aerospace-grade titanium case, spherical sapphire crystal glass, and a 1.5-inch LTPO AMOLED display (466×466 pixels, ~310 ppi). It offers up to 14 days of battery life (typical usage), HUAWEI TruSense health system (heart rate, SpO2, ECG, stress, sleep, skin temperature), 100+ sports modes, dual-band multi-system GPS, 5 ATM water resistance (50 meters), HarmonyOS, Bluetooth 5.2, NFC, and premium design for active, modern lifestyles.",
       brand: "Huawei",
-      model: "Watch GT 4 Pro",
+      model: "Watch GT 4 V9",
       material: "Aerospace Titanium + Sapphire Glass",
       battery: "Up to 14 days",
       image: "ipfs://QmYourIPFSHashhuaweiwatchgt4frontpng",
@@ -142,9 +147,9 @@ export const update = async () => {
 
     console.log(chalk.yellow("Preparing updated metadata..."));
     const newMetadata = {
-      name: "Huawei Watch GT 4 Pro",
+      name: "Huawei Watch GT4 V9",
       description:
-        "The Huawei Watch GT 4 Pro is a high-end smartwatch featuring an aerospace-grade titanium case, spherical sapphire crystal glass, and a 1.5-inch LTPO AMOLED display (466×466 pixels, ~310 ppi). It offers up to 14 days of battery life (typical usage), HUAWEI TruSense health system (heart rate, SpO2, ECG, stress, sleep, skin temperature), 100+ sports modes, dual-band multi-system GPS, 5 ATM water resistance (50 meters), HarmonyOS, Bluetooth 5.2, NFC, and premium design for active, modern lifestyles.",
+        "The Huawei Watch GT4 V9 is a high-end smartwatch featuring an aerospace-grade titanium case, spherical sapphire crystal glass, and a 1.5-inch LTPO AMOLED display (466×466 pixels, ~310 ppi). It offers up to 14 days of battery life (typical usage), HUAWEI TruSense health system (heart rate, SpO2, ECG, stress, sleep, skin temperature), 100+ sports modes, dual-band multi-system GPS, 5 ATM water resistance (50 meters), HarmonyOS, Bluetooth 5.2, NFC, and premium design for active, modern lifestyles.",
       brand: "Huawei",
       model: "Watch GT 4 Pro",
       material: "Aerospace Titanium + Sapphire Glass",
