@@ -9,8 +9,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith("/dashboard");
   const isProduct = pathname?.startsWith("/product");
+  const isRoleSetup = pathname === "/role-setup";
 
-  if (isDashboard || isProduct) return <>{children}</>;
+  if (isDashboard || isProduct || isRoleSetup) return <>{children}</>;
 
   return (
     <>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Shield, LayoutDashboard, QrCode, ScanLine, Settings, LogOut } from "lucide-react";
 import Image from "next/image";
 
@@ -27,7 +28,56 @@ function NavItem({
 }
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [ready, setReady] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof document === "undefined") return;
+    const cookie = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith("auth_token="));
+    const token = cookie ? decodeURIComponent(cookie.split("=")[1] ?? "") : "";
+    if (!token) {
+      router.replace("/");
+      return;
+    }
+    const parts = token.split(".");
+    if (parts.length < 2) {
+      router.replace("/");
+      return;
+    }
+    try {
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64.padEnd(
+        base64.length + ((4 - (base64.length % 4)) % 4),
+        "="
+      );
+      const json = atob(padded);
+      const payload = JSON.parse(json) as { profileId?: unknown };
+      if (!payload.profileId) {
+        router.replace("/role-setup");
+        return;
+      }
+      setReady(true);
+    } catch {
+      router.replace("/");
+    }
+  }, [router]);
+
+  if (!ready) {
+    return null;
+  }
+  const handleLogout = () => {
+    if (typeof document !== "undefined") {
+      document.cookie = "auth_token=; path=/; max-age=0";
+    }
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem("profile_setup");
+      window.location.href = "/";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f2f2f2] text-gray-900">
@@ -45,13 +95,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
           <nav className="px-4 py-4 space-y-1">
             <NavItem href="/dashboard" icon={<LayoutDashboard className="w-5 h-5" />} label="Dashboard" />
-            <NavItem href="/create" icon={<QrCode className="w-5 h-5" />} label="Issue QR" />
-            <NavItem href="/scan" icon={<ScanLine className="w-5 h-5" />} label="Scan" />
+            <NavItem href="/dashboard/profile" icon={<Shield className="w-5 h-5" />} label="Profile" />
           </nav>
 
           <div className="mt-auto px-4 py-4 border-t border-gray-200 space-y-1">
             <NavItem href="/dashboard" icon={<Settings className="w-5 h-5" />} label="Settings" />
-            <NavItem href="/" icon={<LogOut className="w-5 h-5" />} label="Exit to site" />
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-900 hover:bg-red-50/60 hover:text-[#c41e3a] transition-colors"
+            >
+              <span className="w-5 h-5 text-[#c41e3a]">
+                <LogOut className="w-5 h-5" />
+              </span>
+              <span className="font-medium">Log out</span>
+            </button>
           </div>
         </aside>
 
@@ -108,13 +166,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
             <nav className="px-3 py-4 space-y-1 flex-1 overflow-y-auto">
               <NavItem href="/dashboard" icon={<LayoutDashboard className="w-5 h-5" />} label="Dashboard" />
-              <NavItem href="/create" icon={<QrCode className="w-5 h-5" />} label="Issue QR" />
-              <NavItem href="/scan" icon={<ScanLine className="w-5 h-5" />} label="Scan" />
+              <NavItem href="/dashboard/profile" icon={<Shield className="w-5 h-5" />} label="Profile" />
             </nav>
 
             <div className="px-3 py-4 border-t border-gray-200 space-y-1">
               <NavItem href="/dashboard" icon={<Settings className="w-5 h-5" />} label="Settings" />
-              <NavItem href="/" icon={<LogOut className="w-5 h-5" />} label="Exit to site" />
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-900 hover:bg-red-50/60 hover:text-[#c41e3a] transition-colors"
+              >
+                <span className="w-5 h-5 text-[#c41e3a]">
+                  <LogOut className="w-5 h-5" />
+                </span>
+                <span className="font-medium">Log out</span>
+              </button>
             </div>
           </div>
         </>

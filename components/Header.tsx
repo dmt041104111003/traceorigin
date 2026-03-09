@@ -4,17 +4,39 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
+import { useWalletAuth } from "../hooks/useWalletAuth";
 
 const MENU = [
   { id: "home", label: "Home", href: "/" },
   { id: "create", label: "Create", href: "/create" },
   { id: "scan", label: "Scan", href: "/scan" },
-  { id: "dashboard", label: "Dashboard", href: "/dashboard" },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const { loginWithEternl, isLoading, error } = useWalletAuth();
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  
+  React.useEffect(() => {
+    const hasAuthToken = document.cookie.includes('auth_token=');
+    setIsAuthenticated(hasAuthToken);
+  }, []);
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      const hasAuthToken = document.cookie.includes('auth_token=');
+      setIsAuthenticated(hasAuthToken);
+    }
+  }, [isLoading]);
+
+  const handleLogin = () => {
+    loginWithEternl();
+  };
+
+  const handleDashboardClick = () => {
+    window.location.href = '/dashboard';
+  };
 
   const activeId =
     pathname === "/"
@@ -34,6 +56,12 @@ export function Header() {
       document.body.style.overflow = "";
     };
   }, [mobileMenuOpen]);
+
+  React.useEffect(() => {
+    if (error) {
+      alert(error);
+    }
+  }, [error]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 m-0 p-0 bg-white">
@@ -55,23 +83,38 @@ export function Header() {
         </div>
 
         <nav className="hidden md:flex items-center">
-          <div className="header-nav-container px-3 md:px-5 py-1 md:py-1.5 flex gap-2 md:gap-3">
+          <div className="flex gap-2 md:gap-3">
             {MENU.map((item) => {
               const isActive = activeId === item.id;
               return (
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`header-nav-item flex items-center gap-1 px-3 py-1 md:py-1.5 text-sm md:text-base font-medium transition-all ${
-                    isActive ? "header-nav-item-active" : ""
-                  }`}
+                  className="header-nav-item flex items-center gap-1 px-3 py-1 md:py-1.5 text-sm md:text-base font-medium transition-all"
                 >
-                  <span className={`${isActive ? "underline underline-offset-4" : ""} hover:underline hover:underline-offset-4`}>
+                  <span
+                    className={`${
+                      isActive ? "underline underline-offset-4 text-[#c41e3a]" : "text-gray-800"
+                    } hover:underline hover:underline-offset-4`}
+                  >
                     {item.label}
                   </span>
                 </Link>
               );
             })}
+            <button
+              onClick={isAuthenticated ? handleDashboardClick : handleLogin}
+              className="header-nav-item flex items-center gap-1 px-3 py-1 md:py-1.5 text-sm md:text-base font-medium transition-all bg-transparent border-none cursor-pointer"
+              disabled={isLoading}
+            >
+              <span
+                className={`${
+                  pathname.startsWith("/dashboard") ? "underline underline-offset-4 text-[#c41e3a]" : "text-gray-800"
+                } hover:underline hover:underline-offset-4 ${isLoading ? 'opacity-50' : ''}`}
+              >
+                {isLoading ? '...' : (isAuthenticated ? 'Dashboard' : 'Login')}
+              </span>
+            </button>
           </div>
         </nav>
       </div>
@@ -122,6 +165,25 @@ export function Header() {
                   </Link>
                 );
               })}
+              <button
+                onClick={() => {
+                  if (isAuthenticated) {
+                    handleDashboardClick();
+                  } else {
+                    handleLogin();
+                  }
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex items-center justify-between w-full px-4 py-3 text-left text-gray-800 hover:bg-gray-100 rounded-lg transition-colors ${
+                  pathname.startsWith("/dashboard") ? "bg-gray-100" : ""
+                } ${isLoading ? 'opacity-50' : ''}`}
+                disabled={isLoading}
+              >
+                <span className={`font-medium ${pathname.startsWith("/dashboard") ? "text-[#c41e3a] underline underline-offset-4" : ""}`}>
+                  {isLoading ? '...' : (isAuthenticated ? 'Dashboard' : 'Login')}
+                </span>
+                <span className="material-icons text-lg text-gray-500">chevron_right</span>
+              </button>
             </nav>
           </div>
         </>
