@@ -295,7 +295,6 @@ export default function Create() {
                   <>Processing...</>
                 ) : (
                   <>
-                    <Sparkles className="w-6 h-6" />
                     Generate QR Code
                   </>
                 )}

@@ -123,3 +123,90 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* --- Copied header pattern from frontend/ (nav pill + animations) --- */
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "liga";
+}
+
+.header-nav-container {
+  background: linear-gradient(90deg, #e0e9f6 0%, #d4e4f5 50%, #e0e9f6 100%);
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+.dark .header-nav-container {
+  background: rgba(31, 41, 55, 0.9);
+  backdrop-filter: blur(8px);
+}
+
+.header-nav-container.header-nav-open {
+  background: #ffffff;
+}
+
+.dark .header-nav-container.header-nav-open {
+  background: rgb(31, 41, 55);
+}
+
+.header-nav-item {
+  color: #2e3a59;
+  white-space: nowrap;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.header-nav-item.header-nav-item-active {
+  color: #c41e3a;
+  background: rgba(196, 30, 58, 0.08);
+}
+
+.dark .header-nav-item {
+  color: #cbd5e1;
+}
+
+.dark .header-nav-item.header-nav-item-active {
+  color: #c41e3a;
+  background: rgba(196, 30, 58, 0.12);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-dropdown {
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.header-drawer-right {
+  animation: slideInRight 0.25s ease-out forwards;
+}

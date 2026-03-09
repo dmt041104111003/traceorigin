@@ -33,16 +33,6 @@ export default function ScanQR() {
   return (
     <main className="min-h-screen bg-[#f2f2f2] px-3 sm:px-4 py-6 md:py-8">
       <div className="max-w-lg mx-auto w-full space-y-3 md:space-y-4">
-        <header className="text-center space-y-1.5">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-[0.18em]">
-            Scan
-          </p>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Scan QR code</h1>
-          <p className="text-sm text-gray-600">
-            Point the camera at the QR and keep it inside the frame.
-          </p>
-        </header>
-
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2">
           <div className="relative aspect-square">
             <Scanner

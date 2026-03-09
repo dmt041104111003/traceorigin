@@ -67,9 +67,6 @@ export default function Page() {
           </Link>
         </section>
 
-        <footer className="mt-8 text-center text-xs text-gray-500">
-          © 2026 Product Traceability System • Secure • Transparent • Reliable
-        </footer>
       </div>
     </main>
   );
